@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tony Hawk's Pro Skater</title>
+<script src="https://glaxyias.github.io/JS/cdn-resilient.js"></script>
+<style>
+body, html { margin:0; padding:0; display:flex; align-items:center; justify-content:center; width:100%; height:100%; background:#121212; color:white; font-family:Arial; }
+#game-container { text-align:center; width:100%; height:100%; }
+#loading-progress { font-size:18px; margin-top:20px; }
+</style>
+</head>
+<body>
+<div id="game-container">
+<div id="game"></div>
+<div id="loading-progress">Loading: 0/18</div>
+</div>
+<script>
+window.gameconfig = {
+  name: "Tony Hawk's Pro Skater (USA)",
+  url: "https://cdn.jsdelivr.net/gh/bubbls/ugss@2fc3907ff86a6758296508c4ecafe087a2ccd96e/tony%20hawk%20pro%20skater/Tony%20Hawk's%20Pro%20Skater%20(USA).chd",
+  core: "psx",
+  min: 1,
+  max: 18,
+};
+function getParts(file, start, end) {
+  let parts = [];
+  for (let i = start; i <= end; i++) {
+    let padded = String(i).padStart((end+"").length, '0');
+    parts.push(file + ".part" + padded);
+  }
+  return parts;
+}
+async function mergeFiles(fileParts) {
+  let buffers = [];
+  for (let i = 0; i < fileParts.length; i++) {
+    document.getElementById("loading-progress").textContent = `Loading: ${i+1}/${fileParts.length}`;
+    const res = await fetch(fileParts[i]);
+    if (!res.ok) throw new Error(res.status);
+    buffers.push(await res.arrayBuffer());
+  }
+  const mergedBlob = new Blob(buffers);
+  return URL.createObjectURL(mergedBlob);
+}
+(async () => {
+  try {
+    const parts = getParts(window.gameconfig.url, window.gameconfig.min, window.gameconfig.max);
+    const gameUrl = await mergeFiles(parts);
+    document.getElementById("loading-progress").remove();
+    window.EJS_player = "#game";
+    window.EJS_core = window.gameconfig.core;
+    window.EJS_gameName = window.gameconfig.name;
+    window.EJS_color = "#0064ff";
+    window.EJS_startOnLoaded = true;
+    window.EJS_pathtodata = "https://cdn.jsdelivr.net/gh/genizy/emu@master/";
+    window.EJS_gameUrl = gameUrl;
+    window.EJS_biosUrl = "https://cdn.jsdelivr.net/gh/Abdess/retroarch_system@5f96368f6dbad5851cdb16a5041fefec4bdcd305/Sony%20-%20PlayStation/scph5501.bin";
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/gh/genizy/emu@master/loader.js";
+    document.body.appendChild(script);
+  } catch (e) {
+    document.getElementById("loading-progress").textContent = "Error loading game.";
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>
