@@ -52,11 +52,11 @@ async function mergeFiles(fileParts) {
     window.EJS_gameName = window.gameconfig.name;
     window.EJS_color = "#0064ff";
     window.EJS_startOnLoaded = true;
-    window.EJS_pathtodata = "https://cdn.jsdelivr.net/gh/genizy/emu@master/";
+    window.EJS_pathtodata = "../_shared/emu/";
     window.EJS_gameUrl = gameUrl;
-    window.EJS_biosUrl = "https://cdn.jsdelivr.net/gh/Abdess/retroarch_system@5f96368f6dbad5851cdb16a5041fefec4bdcd305/Sony%20-%20PlayStation/scph5501.bin";
+    window.EJS_biosUrl = "assets/cdn/7e5c01d1-scph5501.bin";
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/gh/genizy/emu@master/loader.js";
+    script.src = "../_shared/emu/loader.js";
     document.body.appendChild(script);
   } catch (e) {
     document.getElementById("loading-progress").textContent = "Error loading game.";
